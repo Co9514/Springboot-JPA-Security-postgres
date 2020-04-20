@@ -7,12 +7,12 @@
 이번에 인프런을 통해 전체적인 서비스를 만들어보는 백기선님의 강의가 올라와서 따라해보면서 실습을 진행해보려고 한다.
 스터디 모임을 관리하는 웹 서비스이다.
 
-##사용 기술
-*Spring Boot
-*Spring Security
-*Spring JPA
-*PostgreSQL
-*Querydsl
+## 사용 기술
+* Spring Boot
+* Spring Security
+* Spring JPA
+* PostgreSQL
+* Querydsl
 
 현재 구현 중
 -------------
