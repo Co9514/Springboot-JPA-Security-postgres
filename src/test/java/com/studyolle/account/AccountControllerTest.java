@@ -21,6 +21,7 @@ import static org.springframework.security.test.web.servlet.response.SecurityMoc
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
 class AccountControllerTest {
@@ -63,7 +64,20 @@ class AccountControllerTest {
                 .andExpect(model().attributeExists("nickname"))
                 .andExpect(model().attributeExists("numberOfUser"))
                 .andExpect(view().name("account/checked-email"))
-                .andExpect(authenticated());
+                .andExpect(authenticated().withUsername("Co9514"));
+    }
+
+    @DisplayName("회원 가입 처리 - 입력값 오류")
+    @Test
+    void signUpSubmit_with_wrong_input() throws Exception {
+        mockMvc.perform(post("/sign-up")
+                .param("nickname", "Co9514")
+                .param("email", "email..##")
+                .param("password", "12345")
+                .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/sign-up"))
+                .andExpect(unauthenticated());
     }
 
     @DisplayName("회원가입 화면 테스트")
@@ -86,10 +100,11 @@ class AccountControllerTest {
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"))
-                .andExpect(authenticated());;
+                .andExpect(authenticated().withUsername("Co9514"));;
         Account account = accountRepository.findByEmail("a93779501@gmail.com");
         assertNotNull(account);
         assertNotEquals(account.getPassword(),"asdljfk123123!%$");
+        assertNotNull(account.getEmailCheckTokens());
         //메일 send 테스트
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
