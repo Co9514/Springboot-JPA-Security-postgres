@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
@@ -55,10 +56,22 @@ public class AccountController {
             model.addAttribute("error","wrong.email");
             return view;
         }
-        account.completeSighUp();
-        accountService.login(account);
+        accountService.completeSignUp(account);
         model.addAttribute("numberOfUser",accountRepository.count());
         model.addAttribute("nickname",account.getNickname());
         return view;
+    }
+
+    @GetMapping("/profile/{nickname}")
+    public String viewProfile(@PathVariable String nickname,Model model,@CurrentUser Account currentUser){
+        Account byNickname = accountRepository.findByNickname(nickname);
+        //To Do : View쪽으로 코드를 수정해야함 현재는 로그로 출력
+        if(byNickname == null){
+            throw new IllegalArgumentException(nickname + "에 해당하는 사용자가 없습니다.");
+        }
+        model.addAttribute("account",byNickname);
+        model.addAttribute("isOwner",byNickname.equals(currentUser));
+
+        return "account/profile";
     }
 }
